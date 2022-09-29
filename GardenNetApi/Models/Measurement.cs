@@ -6,6 +6,7 @@ namespace GardenNetApi.Models
     {
         Moisture, Humidity, PAR
     }
+
     public class Measurement
     {
         public int Id { get; set; }

@@ -11,5 +11,7 @@ namespace GardenNetApi.Data
         }
 
         public DbSet<Measurement> Measurements { get; set; }
+        public DbSet<Device> Devices { get; set; }
+        public DbSet<Plant> Plants { get; set; }
     }
 }

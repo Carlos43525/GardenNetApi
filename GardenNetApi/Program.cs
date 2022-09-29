@@ -1,5 +1,6 @@
 using GardenNetApi.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace GardenNetApi
 {
@@ -18,6 +19,7 @@ namespace GardenNetApi
 
             //builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
 
+            builder.Services.AddHttpClient(); 
 
             var app = builder.Build();
 
@@ -30,7 +32,6 @@ namespace GardenNetApi
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
