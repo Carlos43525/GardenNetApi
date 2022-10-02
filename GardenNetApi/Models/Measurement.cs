@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace GardenNetApi.Models
 {
@@ -12,8 +13,10 @@ namespace GardenNetApi.Models
         public int Id { get; set; }
         [Required]
         public MeasurementType MeasurementType { get; set; }
+        [JsonPropertyName("field1")]
         public decimal? MeasuredValue { get; set; }
         [Required]
+        [JsonPropertyName("created_at")]        
         public DateTime DateTime { get; set; }
     }
 }

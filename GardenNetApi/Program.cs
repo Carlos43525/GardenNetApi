@@ -9,6 +9,7 @@ namespace GardenNetApi
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var thingSpeakApiKey = builder.Configuration["ThingSpeak:ApiKey"];
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
