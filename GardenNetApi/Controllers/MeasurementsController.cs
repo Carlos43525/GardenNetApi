@@ -12,15 +12,15 @@ namespace GardenNetApi.Controllers
     [ApiController]
     public class MeasurementsController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IConfiguration _config;
+        private readonly AppDbContext context;
+        private readonly IHttpClientFactory httpClientFactory;
+        private readonly IConfiguration config;
 
         public MeasurementsController(AppDbContext context, IHttpClientFactory httpClientFactory, IConfiguration config)
         {
-            _context = context;
-            _httpClientFactory = httpClientFactory;
-            _config = config;
+            this.context = context;
+            this.httpClientFactory = httpClientFactory;
+            this.config = config;
         }
 
         /// <summary>
@@ -59,70 +59,13 @@ namespace GardenNetApi.Controllers
         ///
         //GET api/measurements
         [HttpGet]
-        public IEnumerable<Measurement> GetAllMeasurements() => _context.Measurements.ToList(); 
-
-        //// GET api/measurments
-        //[HttpGet]
-        ////public IEnumerable<Measurement> GetAllMeasurements() => _context.Measurements.ToList();
-
-        //public async Task DepricatedGetAllMeasurements()
-        //{
-        //    //JsonDocument doc = JsonDocument.Parse(jsonString);
-
-        //    //var parsedJson = doc.RootElement.GetProperty("feeds")[0];
-
-        //    //Measurement? measurement = JsonSerializer.Deserialize<Measurement>(parsedJson);
-
-        //    //measurement.Id = 44;
-        //    //measurement.MeasurementType = MeasurementType.Moisture; 
-
-        //    //Console.WriteLine($"Id: {measurement.Id}");
-        //    //Console.WriteLine($"Type: {measurement.MeasurementType}");
-        //    //Console.WriteLine($"Value: {measurement.MeasuredValue}");
-        //    //Console.WriteLine($"Date: {measurement.DateTime}");
-
-        //    //_context.Add(measurement);
-        //    //await _context.SaveChangesAsync();
-
-        //    string url = "https://thingspeak.com/channels/1877019/feeds.json?api_key=SD9V582YZUA38AM7";
-
-        //    var request = new HttpRequestMessage(
-        //        HttpMethod.Get, url)
-        //    {
-        //        Headers =
-        //        {
-        //            {HeaderNames.Accept, "application/json" }
-        //        }
-        //    };
-
-        //    var httpClient = _httpClientFactory.CreateClient();
-        //    var httpResponseMessage = await httpClient.SendAsync(request); // Blocking code
-
-        //    if (httpResponseMessage.IsSuccessStatusCode)
-        //    {
-        //        string contentString = await httpResponseMessage.Content.ReadAsStringAsync();
-
-        //        JsonDocument doc = JsonDocument.Parse(contentString);
-
-        //        var parsedJson = doc.RootElement.GetProperty("feeds")[0];
-
-
-        //        //var s = JObject.Parse(contentString);
-        //        //var value = s["feeds"][1]["field1"].ToString();
-        //        //Console.WriteLine(value);
-
-        //        //Console.WriteLine(contentString);
-
-        //        //_context.Add(measurement);
-        //        //await _context.SaveChangesAsync();
-        //    }
-        //}
+        public IEnumerable<Measurement> GetAllMeasurements() => context.Measurements.ToList(); 
 
         // GET api/measurments/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Measurement>> GetMeasurementById(int id)
         {
-            var measurement = await _context.Measurements.FindAsync(id);
+            var measurement = await context.Measurements.FindAsync(id);
 
             if (measurement == null)
                 return NotFound();
@@ -134,8 +77,8 @@ namespace GardenNetApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Measurement>> PostMeasurement(Measurement measurement)
         {
-            _context.Measurements.AddRange(measurement);
-            await _context.SaveChangesAsync();
+            context.Measurements.AddRange(measurement);
+            await context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetMeasurementById), new { id = measurement.Id }, measurement);
         }
@@ -146,7 +89,7 @@ namespace GardenNetApi.Controllers
         [HttpPost("/thinspeak")]
         public async Task<ActionResult<Measurement>> PostFromThingSpeak()
         {
-            string url = $"https://thingspeak.com/channels/1877019/feeds.json?api_key={_config["ThingSpeak:ApiKey"]}";
+            string url = $"https://thingspeak.com/channels/1877019/feeds.json?api_key={config["ThingSpeak:ApiKey"]}";
 
 
             var request = new HttpRequestMessage(HttpMethod.Get, url)
@@ -157,7 +100,7 @@ namespace GardenNetApi.Controllers
                 }
             };
 
-            var httpClient = _httpClientFactory.CreateClient();
+            var httpClient = httpClientFactory.CreateClient();
             var httpResponseMessage = await httpClient.SendAsync(request); // Blocking code
 
             if (httpResponseMessage.IsSuccessStatusCode)
@@ -183,8 +126,8 @@ namespace GardenNetApi.Controllers
                     measurementsList.Add(measurement);
                 }
 
-                _context.Measurements.AddRange(measurementsList);
-                await _context.SaveChangesAsync();
+                context.Measurements.AddRange(measurementsList);
+                await context.SaveChangesAsync();
             }
             return Ok();
         }
@@ -198,8 +141,8 @@ namespace GardenNetApi.Controllers
                 return BadRequest();
 
             var testMeasurement = new Measurement { Id = id, MeasurementType = 0, MeasuredValue = 33, DateTime = new DateTime() };
-            _context.Add(testMeasurement);
-            await _context.SaveChangesAsync();
+            context.Add(testMeasurement);
+            await context.SaveChangesAsync();
 
             return StatusCode(200);
 
@@ -213,11 +156,11 @@ namespace GardenNetApi.Controllers
             if (id != measurement.Id)
                 return BadRequest();
 
-            _context.Entry(measurement).State = EntityState.Modified;
+            context.Entry(measurement).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -238,16 +181,16 @@ namespace GardenNetApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMeasurement(int id)
         {
-            var measurement = await _context.Measurements.FindAsync(id);
+            var measurement = await context.Measurements.FindAsync(id);
             if (measurement == null)
                 return NotFound();
 
-            _context.Measurements.Remove(measurement);
-            await _context.SaveChangesAsync();
+            context.Measurements.Remove(measurement);
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool MeasurementExists(int id) => _context.Measurements.Any(m => m.Id == id);
+        private bool MeasurementExists(int id) => context.Measurements.Any(m => m.Id == id);
     }
 }

@@ -9,17 +9,17 @@ namespace GardenNetApi.Controllers
     [ApiController]
     public class DevicesController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly AppDbContext context;
         public DevicesController(AppDbContext context)
         {
-            _context = context;
+            this.context = context;
         }
 
         // GET api/devices/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<Device>> GetDeviceById(int id)
         {
-            var device = await _context.Devices.FindAsync(id);
+            var device = await context.Devices.FindAsync(id);
 
             if (device == null)
                 return NotFound();
@@ -29,14 +29,14 @@ namespace GardenNetApi.Controllers
 
         // GET api/devices
         [HttpGet]
-        public IEnumerable<Device> GetAllDevices() => _context.Devices.ToList();
+        public IEnumerable<Device> GetAllDevices() => context.Devices.ToList();
 
         // POST api/devices
         [HttpPost]
         public async Task<ActionResult<Device>> PostDevice(Device device)
         {
-            _context.Add(device);
-            await _context.SaveChangesAsync();
+            context.Add(device);
+            await context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetDeviceById), new { id = device.Id }, device);
         }
@@ -45,16 +45,16 @@ namespace GardenNetApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDevice(int id)
         {
-            var device = await _context.Devices.FindAsync(id);
+            var device = await context.Devices.FindAsync(id);
             if (device == null)
                 return NotFound();
 
-            _context.Devices.Remove(device);
-            await _context.SaveChangesAsync();
+            context.Devices.Remove(device);
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool DeviceExists(int id) => _context.Devices.Any(m => m.Id == id);
+        private bool DeviceExists(int id) => context.Devices.Any(m => m.Id == id);
     }
 }
