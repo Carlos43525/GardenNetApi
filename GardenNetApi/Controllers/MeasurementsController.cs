@@ -1,5 +1,6 @@
 ﻿using GardenNetApi.Data;
 using GardenNetApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
@@ -56,13 +57,15 @@ namespace GardenNetApi.Controllers
         ///     var value = s["feeds"][1]["field1"].ToString();
         /// </summary>
         /// <returns></returns>
-        ///
+        /// 
         //GET api/measurements
         [HttpGet]
+        [AllowAnonymous]
         public IEnumerable<Measurement> GetAllMeasurements() => context.Measurements.ToList(); 
 
         // GET api/measurments/{id}
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Measurement>> GetMeasurementById(int id)
         {
             var measurement = await context.Measurements.FindAsync(id);
@@ -75,6 +78,7 @@ namespace GardenNetApi.Controllers
 
         // POST api/measurements
         [HttpPost]
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<ActionResult<Measurement>> PostMeasurement(Measurement measurement)
         {
             context.Measurements.AddRange(measurement);
@@ -87,6 +91,7 @@ namespace GardenNetApi.Controllers
         // solution until the microcontrollers can directly post to the server themselves. 
         // POST api/measurements/thingspeak
         [HttpPost("/thinspeak")]
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<ActionResult<Measurement>> PostFromThingSpeak()
         {
             string url = $"https://thingspeak.com/channels/1877019/feeds.json?api_key={config["ThingSpeak:ApiKey"]}";
@@ -135,6 +140,7 @@ namespace GardenNetApi.Controllers
         // POST api/measurements 
         // Test post for ESP32
         [HttpPost("{id}")]
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<IActionResult> TestPost(int id)
         {
             if (id == null)
@@ -151,6 +157,7 @@ namespace GardenNetApi.Controllers
 
         // PUT api/measurements/{id}
         [HttpPut("{id}")]
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<IActionResult> PutMeasurement(int id, Measurement measurement)
         {
             if (id != measurement.Id)
@@ -179,6 +186,7 @@ namespace GardenNetApi.Controllers
 
         // DELETE api/measurements/{id}
         [HttpDelete("{id}")]
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<IActionResult> DeleteMeasurement(int id)
         {
             var measurement = await context.Measurements.FindAsync(id);

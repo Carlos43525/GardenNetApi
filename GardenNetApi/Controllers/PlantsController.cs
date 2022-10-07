@@ -1,5 +1,6 @@
 ﻿using GardenNetApi.Data;
 using GardenNetApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GardenNetApi.Controllers
@@ -16,6 +17,7 @@ namespace GardenNetApi.Controllers
 
         //GET api/plants/{id}
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Plant>> GetPlantById(int id)
         {
             var plant = await context.Plants.FindAsync(id);
@@ -28,10 +30,12 @@ namespace GardenNetApi.Controllers
 
         // GET api/plants
         [HttpGet]
+        [AllowAnonymous]
         public IEnumerable<Plant> GetAllPlants() => context.Plants.ToList();
 
         // POST api/plants
         [HttpPost]
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<ActionResult<Plant>> PostPlant(Plant plant)
         {
             context.Add(plant);
@@ -42,6 +46,7 @@ namespace GardenNetApi.Controllers
 
         // DELETE api/plants/{id}
         [HttpDelete("{id}")]
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<IActionResult> DeletePlant(int id)
         {
             var plant = await context.Plants.FindAsync(id);

@@ -1,5 +1,6 @@
 ﻿using GardenNetApi.Data;
 using GardenNetApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,7 @@ namespace GardenNetApi.Controllers
 
         // GET api/devices/{id}
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<Device>> GetDeviceById(int id)
         {
             var device = await context.Devices.FindAsync(id);
@@ -33,6 +35,7 @@ namespace GardenNetApi.Controllers
 
         // POST api/devices
         [HttpPost]
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<ActionResult<Device>> PostDevice(Device device)
         {
             context.Add(device);
@@ -43,6 +46,7 @@ namespace GardenNetApi.Controllers
 
         // DELETE api/devices/{id}
         [HttpDelete("{id}")]
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<IActionResult> DeleteDevice(int id)
         {
             var device = await context.Devices.FindAsync(id);
