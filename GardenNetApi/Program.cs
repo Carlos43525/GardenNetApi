@@ -16,6 +16,7 @@ namespace GardenNetApi
 
             // Secrets
             var thingSpeakApiKey = builder.Configuration["ThingSpeak:ApiKey"];
+            var JWT = builder.Configuration["JWT:Secret"];
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
@@ -46,7 +47,8 @@ namespace GardenNetApi
                     ValidateAudience = true,
                     ValidAudience = configuration["JWT:ValidAudience"],
                     ValidIssuer = configuration["JWT:ValidIssuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWT))
+                    //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
                 };
             });
 

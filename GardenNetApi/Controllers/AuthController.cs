@@ -1,11 +1,11 @@
-﻿using GardenNetApi.Models;
+﻿using System.Text;
+using GardenNetApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 namespace GardenNetApi.Controllers
 {
@@ -45,6 +45,7 @@ namespace GardenNetApi.Controllers
                     authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                 }
 
+                //var token = GenerateToken(user.Id);
                 var token = CreateToken(authClaims);
 
                 return Ok(new
@@ -58,7 +59,7 @@ namespace GardenNetApi.Controllers
 
         // POST api/auth/register
         [HttpPost("register")]
-        [AllowAnonymous]
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<IActionResult> Register([FromBody] Register model)
         {
             var userExists = await userManager.FindByNameAsync(model.Username);
@@ -81,9 +82,10 @@ namespace GardenNetApi.Controllers
             return Ok(user);
         }
 
+        // Until I stop being lazy and put this stuff somwherelese, registering as admin populates the admin and user roles. 
         // POST api/auth/register-admin
         [HttpPost("register-admin")]
-        [Authorize(Policy = "RequireAdministratorRole")]
+        //[Authorize(Policy = "RequireAdministratorRole")]
         public async Task<IActionResult> RegisterAdmin([FromBody] Register model)
         {
             var userExists = await userManager.FindByNameAsync(model.Username);
@@ -134,8 +136,6 @@ namespace GardenNetApi.Controllers
                 );
 
             return token;
-
         }
-
     }
 }
