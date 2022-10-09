@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GardenNetApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20221006040808_InitialCreate")]
+    [Migration("20221008093016_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

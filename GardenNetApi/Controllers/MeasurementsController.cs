@@ -94,7 +94,7 @@ namespace GardenNetApi.Controllers
         [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<ActionResult<Measurement>> PostFromThingSpeak()
         {
-            string url = $"https://thingspeak.com/channels/1877019/feeds.json?api_key={config["ThingSpeak:ApiKey"]}";
+            string url = $"https://thingspeak.com/channels/1877019/feeds.json?api_key={config["THING:SPEAK"]}";
 
 
             var request = new HttpRequestMessage(HttpMethod.Get, url)

@@ -23,6 +23,26 @@ namespace GardenNetApi.Controllers
             this.roleManager = roleManager;
         }
 
+        // Provides a test message from app configuration for confirmation that it's working. 
+        // GET api/auth
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult GetSecretFromAzure()
+        {
+            var secretValue = config["TestApp:Settings:Message"];
+
+            if (secretValue == null)
+            {
+                return StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    $"Error: No secret named {secretValue} was found...");
+            }
+            else
+            {
+                return Content(secretValue);
+            }
+        }
+
         // POST api/auth/login
         [HttpPost("login")]
         [AllowAnonymous]
@@ -85,7 +105,7 @@ namespace GardenNetApi.Controllers
         // Until I stop being lazy and put this stuff somwherelese, registering as admin populates the admin and user roles. 
         // POST api/auth/register-admin
         [HttpPost("register-admin")]
-        //[Authorize(Policy = "RequireAdministratorRole")]
+        [Authorize(Policy = "RequireAdministratorRole")]
         public async Task<IActionResult> RegisterAdmin([FromBody] Register model)
         {
             var userExists = await userManager.FindByNameAsync(model.Username);
@@ -125,6 +145,7 @@ namespace GardenNetApi.Controllers
 
         private JwtSecurityToken CreateToken(List<Claim> claims)
         {
+            //var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT:Secret"]));
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT:Secret"]));
 
             var token = new JwtSecurityToken(
